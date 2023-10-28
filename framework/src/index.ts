@@ -1,18 +1,17 @@
-import { User } from "./models/User";
-import { UserEdit } from "./views/UserEdit";
-import { UserForm } from "./views/UserForm";
+import { Collection } from "./models/Collection";
+import { User, UserProps, rootUrl } from "./models/User";
+import { UserList } from "./views/UserList";
 
-const rootElement = document.querySelector("#root") as HTMLElement;
+const users = new Collection(rootUrl, (json: UserProps) => {
+  return User.buildUser(json);
+});
 
-const user = User.buildUser({ age: 18, name: "Anthony" });
+users.on("change", () => {
+  const root = document.querySelector("#root");
 
-if(rootElement) {
-    const userEdit = new UserEdit(rootElement, user);
+  if (root) {
+    new UserList(root, users).render();
+  }
+});
 
-    userEdit.render();
-
-    console.log(userEdit.regions);
-    
-}
-
-// userForm.render();
+users.fetch();
